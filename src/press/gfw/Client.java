@@ -26,6 +26,7 @@ import java.net.Socket;
 import java.sql.Timestamp;
 
 import javax.crypto.SecretKey;
+import org.json.simple.JSONObject;
 
 /**
  * 
@@ -35,6 +36,8 @@ import javax.crypto.SecretKey;
  *
  */
 public class Client extends Thread {
+
+	private Config config = null;
 
 	private int listenPort = 0;
 
@@ -54,17 +57,29 @@ public class Client extends Thread {
 
 	private ServerSocket listenSocket = null;
 
-	public Client(String serverHost, int serverPort, String password, int listenPort) {
+	public static void main(String[] args) throws IOException {
+
+		Client client = new Client();
+
+		client.start();
+
+	}
+
+	public Client() {
 
 		super();
 
-		this.listenPort = listenPort;
+		config = new Config();
 
-		this.serverHost = (serverHost == null) ? null : serverHost.trim();
+		JSONObject json = config.getClientConfig();
 
-		this.serverPort = serverPort;
+		this.serverHost = json.get("ServerHost") == null ? null : (String) json.get("ServerHost");
 
-		this.password = (password == null) ? null : password.trim();
+		this.serverPort = json.get("ServerPort") == null ? 0 : Integer.parseInt( (String) json.get("ServerPort") );
+
+		this.password = json.get("Password") == null ? null : (String) json.get("Password");
+
+		this.listenPort = json.get("ProxyPort") == null ? 0 : Integer.parseInt( (String) json.get("ProxyPort") );
 
 		aes = new Encrypt();
 
@@ -76,11 +91,6 @@ public class Client extends Thread {
 
 	}
 
-	public Client(String serverHost, String serverPort, String password, String listenPort) {
-
-		this(serverHost, (serverPort != null && (serverPort = serverPort.trim()).matches("\\d+")) ? Integer.valueOf(serverPort) : 0, password, (listenPort != null && (listenPort = listenPort.trim()).matches("\\d+")) ? Integer.valueOf(listenPort) : 0);
-
-	}
 
 	private void _sleep(long m) {
 

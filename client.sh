@@ -4,4 +4,4 @@ _java="java -Dfile.encoding=utf-8 -Dsun.jnu.encoding=utf-8 -Duser.timezone=Asia/
 
 _pack="press.gfw"
 
-$_java $_pack.Windows  >> client.log
+$_java $_pack.Client  >> client.log
